@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { MessagePattern } from '@nestjs/microservices';
 
@@ -15,5 +15,11 @@ export class AppController {
   @MessagePattern({ cmd: 'getOrders' })
   async getOrders() {
     return await this.appService.getOrders();
+  }
+
+  @Post('/orders/bulk')
+  @MessagePattern({ cmd: 'createOrdersBulk' })
+  async createOrdersBulk() {
+    return await this.appService.createOrdersBulk();
   }
 }

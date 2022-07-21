@@ -8,8 +8,4 @@ export class AppService {
   getHello(): string {
     return 'Hello World!';
   }
-
-  async getOrders(): Promise<any> {
-    return this.ordersClient.send({ cmd: 'getOrders' }, {});
-  }
 }

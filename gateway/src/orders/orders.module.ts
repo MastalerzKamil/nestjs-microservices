@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { OrdersModule } from './orders/orders.module';
+import { OrdersController } from './orders.controller';
+import { OrdersService } from './orders.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
-    OrdersModule,
     ClientsModule.register([
       {
         name: 'ORDERS',
@@ -17,7 +15,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       },
     ]),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [OrdersController],
+  providers: [OrdersService],
 })
-export class AppModule {}
+export class OrdersModule {}

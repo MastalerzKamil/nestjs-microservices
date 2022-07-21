@@ -1,7 +1,7 @@
 import ICustomer from './customer.interface';
 
 export default interface IOrder {
-  id: string;
+  _id: string;
   date: Date;
   customer: ICustomer;
 }
