@@ -98,7 +98,7 @@ export class AppService {
 
     const result = await this.elasticSearchService.bulk({
       refresh: true,
-      body: bulkOperations,
+      operations: bulkOperations,
     });
     console.log(result);
   }
