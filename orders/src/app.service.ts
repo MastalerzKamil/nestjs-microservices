@@ -34,10 +34,7 @@ export class AppService {
     }
     ++page;
 
-    await this.elasticSearchService.bulk({
-      index: 'orders',
-      body: ordersResponse.data,
-    });
+    await this.bulkUpsert(ordersResponse.data);
 
     while (ordersResponse.data.length !== []) {
       ordersResponse = await AppService.getOrdersFromApi(page);
@@ -51,14 +48,7 @@ export class AppService {
         };
       });
 
-      const bulkOperations = orders.map((order) => {
-        return [{ index: { _index: ordersIndex._index } }, order];
-      });
-      const result = await this.elasticSearchService.bulk({
-        refresh: true,
-        body: bulkOperations,
-      });
-      console.log(result);
+      await this.bulkUpsert(orders);
     }
   }
 
@@ -73,6 +63,17 @@ export class AppService {
     return await this.elasticSearchService.indices.create({
       index: 'orders',
     });
+  }
+
+  private async bulkUpsert(orders: IOrder[]) {
+    const bulkOperations = orders.map((order) => {
+      return [{ index: { _index: ordersIndex._index } }, order];
+    });
+    const result = await this.elasticSearchService.bulk({
+      refresh: true,
+      body: bulkOperations,
+    });
+    console.log(result);
   }
 
   private static async getOrdersFromApi(page: number) {

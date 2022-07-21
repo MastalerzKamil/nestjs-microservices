@@ -13,10 +13,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         node: configService.get('ELASTICSEARCH_URL'),
-        auth: {
-          username: configService.get('ELASTICSEARCH_USERNAME'),
-          password: configService.get('ELASTICSEARCH_PASSWORD'),
-        },
+        // auth: {
+        //   username: configService.get('ELASTICSEARCH_USERNAME'),
+        //   password: configService.get('ELASTICSEARCH_PASSWORD'),
+        // },
       }),
       inject: [ConfigService],
     }),
