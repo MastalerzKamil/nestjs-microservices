@@ -66,9 +66,16 @@ export class AppService {
   }
 
   private async bulkUpsert(orders: IOrder[]) {
-    const bulkOperations = orders.map((order) => {
-      return [{ index: { _index: ordersIndex._index } }, order];
+    // const bulkOperations = orders.map((order) => {
+    //   return [{ index: { _index: ordersIndex._index } }, order];
+    // });
+    const bulkOperations = [];
+
+    orders.map((order) => {
+      bulkOperations.push({ index: { _index: ordersIndex._index } });
+      bulkOperations.push(order);
     });
+
     const result = await this.elasticSearchService.bulk({
       refresh: true,
       body: bulkOperations,
