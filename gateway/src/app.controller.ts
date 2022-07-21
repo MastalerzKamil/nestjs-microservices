@@ -9,4 +9,9 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  @Get('/orders')
+  async getOrders(): Promise<any> {
+    return await this.appService.getOrders();
+  }
 }
