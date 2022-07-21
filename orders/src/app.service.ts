@@ -39,16 +39,7 @@ export class AppService {
     while (ordersResponse.data.length !== []) {
       ordersResponse = await AppService.getOrdersFromApi(page);
       ++page;
-      const orders: IOrder[] = ordersResponse.data.map((order) => {
-        return {
-          _index: ordersIndex._index,
-          _type: ordersIndex._index,
-          _id: order.id,
-          ...order,
-        };
-      });
-
-      await this.bulkUpsert(orders);
+      await this.bulkUpsert(ordersResponse.data);
     }
   }
 
@@ -62,17 +53,46 @@ export class AppService {
     }
     return await this.elasticSearchService.indices.create({
       index: 'orders',
+      mappings: {
+        properties: {
+          id: { type: 'text' },
+          date: { type: 'date', format: 'date_time' },
+          customer: {
+            type: 'nested',
+            properties: {
+              id: { type: 'text' },
+              name: { type: 'text' },
+            },
+          },
+          items: {
+            type: 'nested',
+            properties: {
+              product: {
+                type: 'nested',
+                properties: {
+                  id: { type: 'text' },
+                  name: { type: 'text' },
+                  price: { type: 'float' },
+                },
+              },
+              quantity: { type: 'integer' },
+            },
+          },
+        },
+      },
     });
   }
 
   private async bulkUpsert(orders: IOrder[]) {
-    // const bulkOperations = orders.map((order) => {
-    //   return [{ index: { _index: ordersIndex._index } }, order];
-    // });
     const bulkOperations = [];
 
     orders.map((order) => {
-      bulkOperations.push({ index: { _index: ordersIndex._index } });
+      bulkOperations.push({
+        index: {
+          _index: ordersIndex._index,
+          _id: order.id,
+        },
+      });
       bulkOperations.push(order);
     });
 
