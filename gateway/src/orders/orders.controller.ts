@@ -5,6 +5,11 @@ import { OrdersService } from './orders.service';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
+  @Get('/health')
+  async getHealthCheck(): Promise<any> {
+    return await this.ordersService.getHealthCheck();
+  }
+
   @Get()
   async getOrders(): Promise<any> {
     return await this.ordersService.getOrders();

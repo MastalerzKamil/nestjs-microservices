@@ -5,6 +5,10 @@ import { ClientProxy } from '@nestjs/microservices';
 export class OrdersService {
   constructor(@Inject('ORDERS') private readonly ordersClient: ClientProxy) {}
 
+  async getHealthCheck(): Promise<any> {
+    return this.ordersClient.send({ cmd: 'health' }, {});
+  }
+
   async getOrders(): Promise<any> {
     return this.ordersClient.send({ cmd: 'getOrders' }, {});
   }

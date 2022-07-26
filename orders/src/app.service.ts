@@ -8,8 +8,8 @@ import { ordersIndex } from './indexes/order.index';
 export class AppService {
   constructor(private readonly elasticSearchService: ElasticsearchService) {}
 
-  getHello(): string {
-    return 'Hello World!';
+  getHealthCheck(): boolean {
+    return true;
   }
 
   async getOrders() {

@@ -1,4 +1,10 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { MessagePattern } from '@nestjs/microservices';
 
@@ -7,8 +13,9 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @MessagePattern({ cmd: 'health' })
+  getHealthCheck(): boolean {
+    return this.appService.getHealthCheck();
   }
 
   @Get('/orders')
@@ -20,6 +27,11 @@ export class AppController {
   @Post('/orders/bulk')
   @MessagePattern({ cmd: 'createOrdersBulk' })
   async createOrdersBulk() {
-    return await this.appService.createOrdersBulk();
+    try {
+      await this.appService.createOrdersBulk();
+      return { success: true };
+    } catch (error) {
+      throw new HttpException(error, HttpStatus.BAD_REQUEST);
+    }
   }
 }
