@@ -9,7 +9,7 @@ export class OrdersService {
     return this.ordersClient.send({ cmd: 'getOrders' }, {});
   }
 
-  async indexOrders(): Promise<any> {
-    return this.ordersClient.send({ cmd: 'indexOrders' }, {});
+  async createBulk(): Promise<any> {
+    return this.ordersClient.send({ cmd: 'createOrdersBulk' }, {});
   }
 }

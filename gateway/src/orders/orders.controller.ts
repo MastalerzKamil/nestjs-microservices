@@ -10,8 +10,8 @@ export class OrdersController {
     return await this.ordersService.getOrders();
   }
 
-  @Post()
-  async indexOrders(): Promise<any> {
-    return await this.ordersService.indexOrders();
+  @Post('/bulk')
+  async createBulk(): Promise<any> {
+    return await this.ordersService.createBulk();
   }
 }

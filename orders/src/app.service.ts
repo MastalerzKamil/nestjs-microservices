@@ -35,8 +35,9 @@ export class AppService {
     ++page;
 
     await this.bulkUpsert(ordersResponse.data);
+    ordersResponse = await AppService.getOrdersFromApi(page);
 
-    while (ordersResponse.data.length !== []) {
+    while (ordersResponse.data.length !== 0) {
       ordersResponse = await AppService.getOrdersFromApi(page);
       ++page;
       await this.bulkUpsert(ordersResponse.data);
@@ -96,16 +97,15 @@ export class AppService {
       bulkOperations.push(order);
     });
 
-    const result = await this.elasticSearchService.bulk({
+    await this.elasticSearchService.bulk({
       refresh: true,
       operations: bulkOperations,
     });
-    console.log(result);
   }
 
   private static async getOrdersFromApi(page: number) {
     return await axios.get(
-      `https://recruitment-api.dev.flipfit.io/orders?_page=${page}&_limit=1000`,
+      `https://recruitment-api.dev.flipfit.io/orders?_page=${page}&_limit=20001`,
     );
   }
 }
