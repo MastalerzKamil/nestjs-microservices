@@ -10,6 +10,8 @@ async function bootstrap() {
       port: 3002,
     },
   });
+
+  await app.startAllMicroservices();
   await app.listen(3002);
 }
 
