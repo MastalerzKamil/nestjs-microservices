@@ -6,7 +6,7 @@ import { MessagePattern } from '@nestjs/microservices';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
+  @Get('/health')
   @MessagePattern({ cmd: 'health' })
   getHealthCheck(): boolean {
     return this.appService.getHealthCheck();
