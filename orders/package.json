@@ -27,15 +27,12 @@
     "@nestjs/core": "^9.0.0",
     "@nestjs/elasticsearch": "^9.0.0",
     "@nestjs/microservices": "^9.0.5",
-<<<<<<< HEAD
     "@nestjs/mongoose": "^9.2.0",
     "@nestjs/platform-express": "^9.0.0",
     "axios": "^0.27.2",
     "mongoose": "^6.5.0",
-=======
     "@nestjs/platform-express": "^9.0.0",
     "axios": "^0.27.2",
->>>>>>> 70dc96528d7e7511f4a45a7a602bcf3407522480
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"
