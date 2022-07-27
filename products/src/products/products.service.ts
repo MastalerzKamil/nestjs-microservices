@@ -8,4 +8,8 @@ export class ProductsService {
   constructor(
     @InjectModel(Order.name) private readonly orderModel: Model<OrderDocument>,
   ) {}
+
+  async getBestSellers(): Promise<OrderDocument[]> {
+    return this.orderModel.find({}).limit(10);
+  }
 }
