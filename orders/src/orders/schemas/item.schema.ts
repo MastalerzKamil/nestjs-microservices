@@ -12,8 +12,8 @@ export class Item {
   @Prop({ required: true })
   product: Product;
 
-  @Prop({ required: true })
-  totalPrice: number;
+  // @Prop({ required: true })
+  // totalPrice: number;
 }
 
 export const ItemSchema = SchemaFactory.createForClass(Item);

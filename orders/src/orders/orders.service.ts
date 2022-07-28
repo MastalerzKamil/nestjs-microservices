@@ -24,16 +24,16 @@ export class OrdersService {
     }
     ++page;
 
-    const mappedOrders: Order[] = this.mapOrder(ordersResponse.data);
+    // const mappedOrders: Order[] = this.mapOrder(ordersResponse.data);
 
-    await this.bulkUpsert(mappedOrders);
+    await this.bulkUpsert(ordersResponse.data);
     ordersResponse = await OrdersService.getOrdersFromApi(page);
 
     while (ordersResponse.data.length !== 0) {
       ordersResponse = await OrdersService.getOrdersFromApi(page);
       ++page;
-      const mappedOrders: Order[] = this.mapOrder(ordersResponse.data);
-      await this.bulkUpsert(mappedOrders);
+      // const mappedOrders: Order[] = this.mapOrder(ordersResponse.data);
+      await this.bulkUpsert(ordersResponse.data);
     }
   }
 
@@ -45,7 +45,7 @@ export class OrdersService {
         update: order,
       },
     }));
-    const bulkUpsertResult = await this.orderModel.bulkWrite(ordersToUpsert);
+    await this.orderModel.bulkWrite(ordersToUpsert);
   }
 
   private static async getOrdersFromApi(page: number) {
