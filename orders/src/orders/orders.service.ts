@@ -18,29 +18,31 @@ export class OrdersService {
   async createOrdersBulk() {
     let page = 1;
     let ordersResponse = await OrdersService.getOrdersFromApi(page);
+    console.info(`Page ${page} fetched`);
 
     if (ordersResponse.data.length === 0) {
       return;
     }
     ++page;
 
-    // const mappedOrders: Order[] = this.mapOrder(ordersResponse.data);
+    const mappedOrders: Order[] = this.mapOrder(ordersResponse.data);
 
-    await this.bulkUpsert(ordersResponse.data);
+    await this.bulkUpsert(mappedOrders);
     ordersResponse = await OrdersService.getOrdersFromApi(page);
 
     while (ordersResponse.data.length !== 0) {
       ordersResponse = await OrdersService.getOrdersFromApi(page);
+      console.info(`Page ${page} fetched`);
       ++page;
-      // const mappedOrders: Order[] = this.mapOrder(ordersResponse.data);
-      await this.bulkUpsert(ordersResponse.data);
+      const mappedOrders: Order[] = this.mapOrder(ordersResponse.data);
+      await this.bulkUpsert(mappedOrders);
     }
   }
 
   private async bulkUpsert(orders: Order[]) {
     const ordersToUpsert = orders.map((order) => ({
       updateMany: {
-        filter: { id: order.id },
+        filter: { orderId: order.orderId, productName: order.productName },
         upsert: true,
         update: order,
       },
@@ -50,20 +52,23 @@ export class OrdersService {
 
   private static async getOrdersFromApi(page: number) {
     return await axios.get(
-      `https://recruitment-api.dev.flipfit.io/orders?_page=${page}&_limit=20001`,
+      `https://recruitment-api.dev.flipfit.io/orders?_page=${page}&_limit=10000`,
     );
   }
 
-  private mapOrder(order: OrderDao[]): Order[] {
-    return order.map((order) => ({
-      id: order.id,
-      date: new Date(order.date),
-      customer: order.customer,
-      items: order.items.map((item) => ({
-        product: { ...item.product },
-        totalPrice: item.product.price * item.quantity,
+  private mapOrder(ordersSource: OrderDao[]): Order[] {
+    const mappedOrders = ordersSource.map((order) => {
+      return order.items.map((item) => ({
+        productName: item.product.name,
+        productPrice: item.product.price,
         quantity: item.quantity,
-      })),
-    }));
+        transactionDate: order.date,
+        orderId: order.id,
+      }));
+    });
+
+    const concatenatedOrders: Order[] = [].concat(...mappedOrders);
+    console.info(`${concatenatedOrders.length} orders upload`);
+    return concatenatedOrders;
   }
 }
