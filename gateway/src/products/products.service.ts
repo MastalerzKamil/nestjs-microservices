@@ -10,4 +10,16 @@ export class ProductsService {
   async getHealthCheck(): Promise<any> {
     return this.productsClient.send({ cmd: 'health' }, {});
   }
+
+  async getBestSellers(): Promise<any> {
+    return this.productsClient.send({ cmd: 'getBestSellers' }, {});
+  }
+
+  async getMostBought(): Promise<any> {
+    return this.productsClient.send({ cmd: 'getMostBought' }, {});
+  }
+
+  async getMostBoughtYesterday(): Promise<any> {
+    return this.productsClient.send({ cmd: 'getMostBoughtYesterday' }, {});
+  }
 }

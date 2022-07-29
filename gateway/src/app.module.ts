@@ -37,32 +37,15 @@ import { ScheduleModule } from '@nestjs/schedule';
       {
         name: 'PRODUCTS',
         imports: [ConfigModule],
-        useFactory: async (configService: ConfigService) => ({
-          transport: Transport.REDIS,
+        useFactory: async () => ({
+          transport: Transport.TCP,
           options: {
-            host: configService.get<string>('REDIS_URL'),
-            port: +configService.get<number>('REDIS_PORT'),
+            port: 3002,
           },
         }),
         inject: [ConfigService],
       },
     ]),
-    // ClientsModule.register([
-    //   {
-    //     name: 'ORDERS',
-    //     transport: Transport.REDIS,
-    //     options: {
-    //       port: 3001,
-    //     },
-    //   },
-    //   {
-    //     name: 'PRODUCTS',
-    //     transport: Transport.REDIS,
-    //     options: {
-    //       port: 3002,
-    //     },
-    //   },
-    // ]),
     ProductsModule,
   ],
   controllers: [AppController],
