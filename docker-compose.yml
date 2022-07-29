@@ -1,21 +1,66 @@
 version: "3"
 
 services:
-#  app:
-#    container_name: app
-#    image: app:latest
-#    build: .
-#    env_file:
-#      - ./.env
-#    ports:
-#      - "3000:3000"
-#    volumes:
-#      - .:/app
-#      - /app/node_modules
-#    depends_on:
-#      - db
-#    links:
-#      - db
+  orders:
+    container_name: orders_service
+    image: app:latest
+    build: ./orders
+    env_file:
+      - ./orders/.env
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - db
+      - redis
+    links:
+      - db
+      - redis
+    networks:
+      - app-net
+  products:
+    container_name: products_service
+    image: app:latest
+    build: ./products
+    env_file:
+      - ./products/.env
+    ports:
+      - "3002:3002"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - db
+      - redis
+      - orders
+    links:
+      - db
+      - redis
+    networks:
+      - app-net
+  gateway:
+    container_name: api_gateway
+    image: app:latest
+    build: ./gateway
+    env_file:
+      - ./gateway/.env
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - db
+      - redis
+      - orders
+      - products
+    links:
+      - db
+      - redis
+    networks:
+      - app-net
   db:
     container_name: db
     image: mongo
@@ -28,6 +73,8 @@ services:
     volumes:
       - ./docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - ./data/db:/data/db
+    networks:
+      - app-net
   redis:
     image: 'bitnami/redis:latest'
     container_name: redis_container
