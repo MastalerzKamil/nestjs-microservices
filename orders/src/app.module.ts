@@ -24,6 +24,13 @@ import { BullModule } from '@nestjs/bull';
         port: parseInt(process.env.REDIS_PORT, 10) || 6379,
       },
     }),
+    BullModule.registerQueue({
+      name: 'orders',
+      redis: {
+        host: process.env.REDIS_URL,
+        port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+      },
+    }),
     OrdersModule,
   ],
   controllers: [AppController],

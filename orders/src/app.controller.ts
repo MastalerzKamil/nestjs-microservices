@@ -7,7 +7,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get('/health')
-  @MessagePattern({ cmd: 'health' })
+  @MessagePattern('health')
   getHealthCheck(): boolean {
     return this.appService.getHealthCheck();
   }

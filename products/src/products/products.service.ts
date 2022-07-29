@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { Order, OrderDocument } from './schemas/order.schema';
 import { InjectModel } from '@nestjs/mongoose';
+import { BestSellersDto } from './dto/best-sellers.dto';
+import { MostBoughtDto } from './dto/most-bought.dto';
 
 @Injectable()
 export class ProductsService {
@@ -9,8 +11,8 @@ export class ProductsService {
     @InjectModel(Order.name) private readonly orderModel: Model<OrderDocument>,
   ) {}
 
-  async getBestSellers(): Promise<OrderDocument[]> {
-    return this.orderModel.aggregate([
+  async getBestSellers(): Promise<BestSellersDto[]> {
+    const result = await this.orderModel.aggregate([
       {
         $group: {
           _id: '$productName',
@@ -30,22 +32,37 @@ export class ProductsService {
         $limit: 10,
       },
     ]);
+
+    return result.map((item) => ({
+      name: item._id,
+      totalSale: item.totalSale,
+    }));
   }
 
-  async getMostBought(): Promise<OrderDocument[]> {
-    return this.orderModel.aggregate([
+  async getMostBought(): Promise<MostBoughtDto[]> {
+    const result = await this.orderModel.aggregate([
       { $group: { _id: '$productName', totalProductTransaction: { $sum: 1 } } },
       { $sort: { totalProductTransaction: -1 } },
       { $limit: 10 },
     ]);
+
+    return result.map((item) => ({
+      name: item._id,
+      totalProductTransaction: item.totalProductTransaction,
+    }));
   }
 
-  async getMostBoughtYesterday(date: Date): Promise<OrderDocument[]> {
-    return this.orderModel.aggregate([
+  async getMostBoughtYesterday(date: Date): Promise<MostBoughtDto[]> {
+    const result = await this.orderModel.aggregate([
       { $match: { transactionDate: { $lte: date } } },
       { $group: { _id: '$productName', totalProductTransaction: { $sum: 1 } } },
       { $sort: { totalProductTransaction: -1 } },
       { $limit: 10 },
     ]);
+
+    return result.map((item) => ({
+      name: item._id,
+      totalProductTransaction: item.totalProductTransaction,
+    }));
   }
 }

@@ -5,7 +5,7 @@ import { OrdersModule } from './orders/orders.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ProductsModule } from './products/products.module';
 import { BullModule } from '@nestjs/bull';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -14,6 +14,23 @@ import { ScheduleModule } from '@nestjs/schedule';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ClientsModule.register([
+      {
+        name: 'ORDERS',
+        transport: Transport.REDIS,
+        options: {
+          host: process.env.REDIS_URL || 'localhost',
+          port: parseInt(process.env.REDIS_PORT) || 6379,
+        },
+      },
+      {
+        name: 'PRODUCTS',
+        transport: Transport.TCP,
+        options: {
+          port: 3002,
+        },
+      },
+    ]),
     BullModule.forRoot({
       redis: {
         host: process.env.REDIS_URL || 'localhost',
@@ -21,31 +38,6 @@ import { ScheduleModule } from '@nestjs/schedule';
       },
     }),
     ScheduleModule.forRoot(),
-    ClientsModule.registerAsync([
-      {
-        name: 'ORDERS',
-        imports: [ConfigModule],
-        useFactory: async (configService: ConfigService) => ({
-          transport: Transport.REDIS,
-          options: {
-            host: configService.get<string>('REDIS_URL'),
-            port: +configService.get<number>('REDIS_PORT'),
-          },
-        }),
-        inject: [ConfigService],
-      },
-      {
-        name: 'PRODUCTS',
-        imports: [ConfigModule],
-        useFactory: async () => ({
-          transport: Transport.TCP,
-          options: {
-            port: 3002,
-          },
-        }),
-        inject: [ConfigService],
-      },
-    ]),
     ProductsModule,
   ],
   controllers: [AppController],

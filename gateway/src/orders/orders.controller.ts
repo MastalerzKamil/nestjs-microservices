@@ -5,7 +5,7 @@ import { OrdersService } from './orders.service';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  @Get('/health')
+  @Get()
   async getHealthCheck(): Promise<any> {
     return await this.ordersService.getHealthCheck();
   }

@@ -1,7 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpException } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { MessagePattern } from '@nestjs/microservices';
-import { Order } from './schemas/order.schema';
+import { BestSellersDto } from './dto/best-sellers.dto';
+import { MostBoughtDto } from './dto/most-bought.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -9,20 +10,50 @@ export class ProductsController {
 
   @Get('/best-sellers')
   @MessagePattern({ cmd: 'getBestSellers' })
-  async getBestSellers(): Promise<Order[]> {
-    return await this.productsService.getBestSellers();
+  async getBestSellers(): Promise<BestSellersDto[]> {
+    try {
+      const result = await this.productsService.getBestSellers();
+      return result.map((item) => {
+        return {
+          name: item.name,
+          totalSale: item.totalSale,
+        };
+      });
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
   }
 
   @Get('/most-bought')
   @MessagePattern({ cmd: 'getMostBought' })
-  async getMostBought(): Promise<Order[]> {
-    return await this.productsService.getMostBought();
+  async getMostBought(): Promise<MostBoughtDto[]> {
+    try {
+      const result = await this.productsService.getMostBought();
+      return result.map((item) => {
+        return {
+          name: item.name,
+          totalProductTransaction: item.totalProductTransaction,
+        };
+      });
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
   }
 
   @Get('/most-bought/yesterday')
   @MessagePattern({ cmd: 'getMostBoughtYesterday' })
-  async getMostBoughtYesterday(): Promise<Order[]> {
-    const date = new Date(new Date().setDate(new Date().getDate() - 1));
-    return await this.productsService.getMostBoughtYesterday(date);
+  async getMostBoughtYesterday(): Promise<MostBoughtDto[]> {
+    try {
+      const date = new Date(new Date().setDate(new Date().getDate() - 1));
+      const result = await this.productsService.getMostBoughtYesterday(date);
+      return result.map((item) => {
+        return {
+          name: item.name,
+          totalProductTransaction: item.totalProductTransaction,
+        };
+      });
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
   }
 }

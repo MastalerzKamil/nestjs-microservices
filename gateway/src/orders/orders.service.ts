@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { ClientProxy } from '@nestjs/microservices';
+import { Queue } from 'bull';
+import { InjectQueue } from '@nestjs/bull';
 
 @Injectable()
 export class OrdersService {
@@ -12,7 +12,7 @@ export class OrdersService {
   ) {}
 
   async getHealthCheck(): Promise<any> {
-    return this.ordersClient.send({ cmd: 'health' }, {});
+    return this.ordersClient.send('health', {});
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_1AM)
