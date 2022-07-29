@@ -9,4 +9,14 @@ export class ProductsController {
   async getBestSellers() {
     return await this.productsService.getBestSellers();
   }
+
+  @Get('/most-bought')
+  async getMostBought() {
+    return await this.productsService.getMostBought();
+  }
+
+  @Get('/most-bought/yesterday')
+  async getMostBoughtYesterday() {
+    return await this.productsService.getMostBoughtYesterday();
+  }
 }

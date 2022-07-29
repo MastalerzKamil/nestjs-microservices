@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, HttpException, Post } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
@@ -10,13 +10,13 @@ export class OrdersController {
     return await this.ordersService.getHealthCheck();
   }
 
-  @Get()
-  async getOrders(): Promise<any> {
-    return await this.ordersService.getOrders();
-  }
-
   @Post('/bulk')
   async createBulk(): Promise<any> {
-    return await this.ordersService.createBulk();
+    try {
+      await this.ordersService.createBulk();
+      return { success: true };
+    } catch (e) {
+      throw new HttpException(e.message, e.status);
+    }
   }
 }

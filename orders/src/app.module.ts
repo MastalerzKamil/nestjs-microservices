@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { OrdersModule } from './orders/orders.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -16,6 +17,12 @@ import { MongooseModule } from '@nestjs/mongoose';
         uri: configService.get<string>('ORDERS_DB_URI'),
       }),
       inject: [ConfigService],
+    }),
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_URL,
+        port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+      },
     }),
     OrdersModule,
   ],

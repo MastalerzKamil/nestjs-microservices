@@ -12,4 +12,12 @@ export class ProductsService {
   async getBestSellers(): Promise<OrderDocument[]> {
     return this.orderModel.find({}).limit(10);
   }
+
+  async getMostBought(): Promise<OrderDocument[]> {
+    return this.orderModel.find({}).limit(10);
+  }
+
+  async getMostBoughtYesterday(): Promise<OrderDocument[]> {
+    return this.orderModel.find({}).limit(10);
+  }
 }

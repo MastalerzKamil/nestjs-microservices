@@ -4,18 +4,26 @@ import axios from 'axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { OrderDao } from './dao/order.dao';
+import {
+  InjectQueue,
+  OnQueueActive,
+  OnQueueCompleted,
+  Process,
+  Processor,
+} from '@nestjs/bull';
+import { Job, Queue } from 'bull';
 
 @Injectable()
+@Processor('orders')
 export class OrdersService {
   constructor(
+    @InjectQueue('orders') private readonly ordersQueue: Queue,
     @InjectModel(Order.name) private readonly orderModel: Model<OrderDocument>,
   ) {}
 
-  async getOrders() {
-    return [];
-  }
-
-  async createOrdersBulk() {
+  @Process('createBulk')
+  async createOrdersBulk(job: Job<unknown>) {
+    console.info(`start process ${job.name}`);
     let page = 1;
     let ordersResponse = await OrdersService.getOrdersFromApi(page);
     console.info(`Page ${page} fetched`);
@@ -36,7 +44,23 @@ export class OrdersService {
       ++page;
       const mappedOrders: Order[] = this.mapOrder(ordersResponse.data);
       await this.bulkUpsert(mappedOrders);
+      console.info(`Page ${page} upserted`);
     }
+    console.info(`Process ${job.name} completed`);
+  }
+
+  @OnQueueActive()
+  onActive(job: Job) {
+    console.log(
+      `Processing fetching orders in  job ${job.id} of type ${job.name}...`,
+    );
+  }
+
+  @OnQueueCompleted()
+  onCompleted(job: Job) {
+    console.log(
+      `Fetching orders with Job ${job.id} of type ${job.name} completed`,
+    );
   }
 
   private async bulkUpsert(orders: Order[]) {
