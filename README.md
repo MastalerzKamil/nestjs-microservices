@@ -20,15 +20,18 @@ To achieve it the app uses cron jobs and REDIS queue from gateway. The jobs are 
 
 # App
 ## How to start 
-The easiest way is to run the app is setting up a Docker containers using command
+
+Unfortunatelly due to issues with Redis in proposed solutions inside my docker compose 
+I couldn't dockerize the app at all. However running `db`, `redis` containers by using 
+command below works 
 ```shell
-docker-compose up -d
+docker compose up db redis -d
 ```
+I did my best to make it work, but I couldn't. Doing these way will be required run each service separately. and use localhost instead container name.
+
 
 Before you'll do it remember about copy `.env.example` to `.env`.
 
-
-Another way to run app is using localhost. It's based by running only redis and MongoDB containers.
 
 ## Endpoints
 
