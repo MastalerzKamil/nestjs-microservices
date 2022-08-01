@@ -27,6 +27,7 @@ import { ScheduleModule } from '@nestjs/schedule';
         name: 'PRODUCTS',
         transport: Transport.TCP,
         options: {
+          host: process.env.PRODUCTS_URL || 'localhost',
           port: 3002,
         },
       },

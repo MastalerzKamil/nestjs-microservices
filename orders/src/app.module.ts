@@ -18,19 +18,41 @@ import { BullModule } from '@nestjs/bull';
       }),
       inject: [ConfigService],
     }),
-    BullModule.forRoot({
-      redis: {
-        host: process.env.REDIS_URL,
-        port: parseInt(process.env.REDIS_PORT, 10) || 6379,
-      },
+    // BullModule.forRoot({
+    //   redis: {
+    //     host: process.env.REDIS_URL,
+    //     port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+    //   },
+    // }),
+
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('REDIS_HOST'),
+          port: configService.get('REDIS_PORT'),
+        },
+      }),
+      inject: [ConfigService],
     }),
-    BullModule.registerQueue({
+    BullModule.registerQueueAsync({
+      imports: [ConfigModule],
       name: 'orders',
-      redis: {
-        host: process.env.REDIS_URL,
-        port: parseInt(process.env.REDIS_PORT, 10) || 6379,
-      },
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('REDIS_HOST'),
+          port: configService.get('REDIS_PORT'),
+        },
+      }),
+      inject: [ConfigService],
     }),
+    // BullModule.registerQueue({
+    //   name: 'orders',
+    //   redis: {
+    //     host: process.env.REDIS_URL,
+    //     port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+    //   },
+    // }),
     OrdersModule,
   ],
   controllers: [AppController],
